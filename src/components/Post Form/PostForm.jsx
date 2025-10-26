@@ -8,10 +8,10 @@ import service from "../../Appwrite/config";
 export default function PostForm({ post }) {
     const { register, handleSubmit, watch, setValue, control, getValues, reset } = useForm({
         defaultValues: {
-            title: post?.title || "",
+            title: post?.Title || "",
             slug: post?.$id || "",
-            content: post?.content || "",
-            status: post?.status || "active",
+            content: post?.Content || "",
+            status: post?.Status || "active",
         },
     });
 
@@ -40,19 +40,20 @@ export default function PostForm({ post }) {
 
             const dbPost = await service.updateArticle(post.$id, {
                 ...data,
-                FeaturedImage: file ? file.$id : undefined,
+                FeaturedImage: file ? file.$id : post.FeaturedImage,
             });
+
 
             if (dbPost) {
                 navigate(`/post/${dbPost.$id}`);
             }
         } else {
-            const file = await service.uploadFile(data.image[0]);
+            const file = await service.FileUpload(data.image[0]);
 
             if (file) {
                 const fileId = file.$id;
-                data.FeaturedImage = fileId;
-                const dbPost = await service.createPost({ ...data, userId: userData.$id });
+                data.featured = fileId;
+                const dbPost = await service.CreateArticle({ ...data, userID: userData.$id });
 
                 if (dbPost) {
                     navigate(`/post/${dbPost.$id}`);
