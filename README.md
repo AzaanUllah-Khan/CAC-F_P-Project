@@ -4,4 +4,6 @@ This project itself is a practice project which I've made after completing the `
 
 Alos I practice about `Appwrite` and proper react structures
 
+----------
+
 `Next Step` Twitter Clone
