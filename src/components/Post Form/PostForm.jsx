@@ -35,32 +35,35 @@ export default function PostForm({ post }) {
             const file = data.image[0] ? await service.FileUpload(data.image[0]) : null;
 
             if (file) {
-                service.FileDelete(post.FeaturedImage);
+                await service.FileDelete(post.FeaturedImage); // ✅ wait for delete
             }
 
             const dbPost = await service.updateArticle(post.$id, {
-                ...data,
-                FeaturedImage: file ? file.$id : post.FeaturedImage,
+                title: data.title,
+                content: data.content,
+                featured: file ? file.$id : post.FeaturedImage,
+                status: data.status,
             });
 
-
-            if (dbPost) {
-                navigate(`/post/${dbPost.$id}`);
-            }
+            if (dbPost) navigate(`/post/${dbPost.$id}`);
         } else {
             const file = await service.FileUpload(data.image[0]);
 
             if (file) {
-                const fileId = file.$id;
-                data.featured = fileId;
-                const dbPost = await service.CreateArticle({ ...data, userID: userData.$id });
+                const dbPost = await service.CreateArticle({
+                    title: data.title,
+                    slug: data.slug,
+                    content: data.content,
+                    featured: file.$id,
+                    status: data.status,
+                    userID: userData.$id,
+                });
 
-                if (dbPost) {
-                    navigate(`/post/${dbPost.$id}`);
-                }
+                if (dbPost) navigate(`/post/${dbPost.$id}`);
             }
         }
     };
+
 
     const slugTransform = useCallback((value) => {
         if (value && typeof value === "string")
